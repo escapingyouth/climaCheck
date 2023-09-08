@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import useWeather from './customHooks/useWeather';
 
 import Container from './components/Container';
 import Box from './components/Box';
@@ -7,72 +7,25 @@ import WeatherInfo from './components/WeatherInfo';
 import LocationInput from './components/LocationInput';
 import SearchButton from './components/SearchButton';
 import WeatherSearch from './components/WeatherSearch';
-import SavedLocations from './components/SavedLocations';
+import RecentLocations from './components/RecentLocations';
 import WeatherDetails from './components/WeatherDetails';
 
 import Loader from './components/Loader';
-import Error from './components/Error';
+import ErrorPage from './components/ErrorPage';
 
 const apiKey = import.meta.env.VITE_API_KEY;
 
 const App = () => {
-	const [location, setLocation] = useState('');
-	const [backgroundUrl, setBackgroundUrl] = useState('/background.jpg');
-	const [weather, setWeather] = useState({});
-	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState(null);
-
-	const handleSetLocation = (e) => {
-		setLocation(e.target.value);
-	};
-
-	const fetchWeatherData = async () => {
-		try {
-			setIsLoading(true);
-
-			if (location.length < 3) {
-				setWeather({});
-				setError('');
-				return;
-			}
-			const response = await fetch(
-				`https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric`
-			);
-
-			if (!response.ok) {
-				throw new Error(
-					'Something went wrong with fetching weather information'
-				);
-			}
-			const data = await response.json();
-
-			if (data.Response === 'False') throw new Error('Location not found');
-
-			const { name } = data;
-			const { description, icon } = data.weather[0];
-			const { temp, humidity, pressure } = data.main;
-			const { speed } = data.wind;
-			const { all: cloudiness } = data.clouds;
-
-			setWeather({
-				name,
-				description,
-				temp,
-				humidity,
-				speed,
-				icon,
-				pressure,
-				cloudiness
-			});
-
-			setBackgroundUrl(`https://source.unsplash.com/1600x900/?${name}`);
-		} catch (error) {
-			console.log(error);
-			setError(error.message);
-		} finally {
-			setIsLoading(false);
-		}
-	};
+	const {
+		location,
+		backgroundUrl,
+		weather,
+		isLoading,
+		error,
+		recentLocations,
+		handleSetLocation,
+		fetchWeatherData
+	} = useWeather(apiKey);
 
 	return (
 		<Container>
@@ -93,7 +46,7 @@ const App = () => {
 
 						{weather.name && (
 							<>
-								<SavedLocations />
+								<RecentLocations recentLocations={recentLocations} />
 								<WeatherDetails weather={weather} />
 							</>
 						)}
@@ -101,7 +54,7 @@ const App = () => {
 				</Box>
 			)}
 
-			{error && <Error message={error} />}
+			{error && <ErrorPage message={error} />}
 		</Container>
 	);
 };
