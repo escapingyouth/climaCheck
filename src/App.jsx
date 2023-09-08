@@ -1,83 +1,107 @@
+import { useState } from 'react';
+
+import Container from './components/Container';
+import Box from './components/Box';
+import WeatherSummary from './components/WeatherSummary';
+import WeatherInfo from './components/WeatherInfo';
+import LocationInput from './components/LocationInput';
 import SearchButton from './components/SearchButton';
-import PropTypes from 'prop-types';
+import WeatherSearch from './components/WeatherSearch';
+import SavedLocations from './components/SavedLocations';
+import WeatherDetails from './components/WeatherDetails';
 
-Search.propTypes = {
-	children: PropTypes.node.isRequired
-};
-Container.propTypes = {
-	children: PropTypes.node.isRequired
-};
-Box.propTypes = {
-	children: PropTypes.node.isRequired
-};
-WeatherSummary.propTypes = {
-	children: PropTypes.node.isRequired
-};
-WeatherInfo.propTypes = {
-	children: PropTypes.node.isRequired
-};
+import Loader from './components/Loader';
+import Error from './components/Error';
 
-function Search({ children }) {
-	return <nav className='flex justify-between items-end'>{children}</nav>;
-}
-
-function Container({ children }) {
-	return (
-		<div
-			className='h-screen w-screen bg-gradient-to-r from-[#414141]
-     	    to-[#100f0f] flex justify-center items-center text-white select-none'
-		>
-			{children}
-		</div>
-	);
-}
-function Box({ children }) {
-	return (
-		<div
-			className="w-[85%] h-[90%] bg-[url('assets/images/background.jpg')] bg-cover 
-        		   bg-no-repeat bg-center drop-shadow-xl flex"
-		>
-			{children}
-		</div>
-	);
-}
-
-function WeatherSummary({ children }) {
-	return <div className='h-full w-3/5 px-11 pt-14'>{children}</div>;
-}
-
-function WeatherInfo({ children }) {
-	return (
-		<div className='w-2/5 h-full bg-[rgba(0,0,0,0.4)] backdrop-blur-lg'>
-			{children}
-		</div>
-	);
-}
+const apiKey = import.meta.env.VITE_API_KEY;
 
 const App = () => {
+	const [location, setLocation] = useState('');
+	const [backgroundUrl, setBackgroundUrl] = useState('/background.jpg');
+	const [weather, setWeather] = useState({});
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState(null);
+
+	const handleSetLocation = (e) => {
+		setLocation(e.target.value);
+	};
+
+	const fetchWeatherData = async () => {
+		try {
+			setIsLoading(true);
+
+			if (location.length < 3) {
+				setWeather({});
+				setError('');
+				return;
+			}
+			const response = await fetch(
+				`https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric`
+			);
+
+			if (!response.ok) {
+				throw new Error(
+					'Something went wrong with fetching weather information'
+				);
+			}
+			const data = await response.json();
+
+			if (data.Response === 'False') throw new Error('Location not found');
+
+			const { name } = data;
+			const { description, icon } = data.weather[0];
+			const { temp, humidity, pressure } = data.main;
+			const { speed } = data.wind;
+			const { all: cloudiness } = data.clouds;
+
+			setWeather({
+				name,
+				description,
+				temp,
+				humidity,
+				speed,
+				icon,
+				pressure,
+				cloudiness
+			});
+
+			setBackgroundUrl(`https://source.unsplash.com/1600x900/?${name}`);
+		} catch (error) {
+			console.log(error);
+			setError(error.message);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
 	return (
 		<Container>
-			<Box>
-				<WeatherSummary>
-					<span className='font-medium'>ClimaCheck</span>
-					<h1 className='text-[10rem] font-medium'></h1>
-				</WeatherSummary>
-				<WeatherInfo>
-					<Search>
-						<input
-							type='text'
-							name='location'
-							id='location'
-							className='text-[#c0cbda] bg-transparent font-raleway !placeholder-[#94A3B8] 
-						    focus:outline-none border-b-[1px] pb-2 ml-14 w-3/5 border-[#94A3B8]
-						    focus:border-[#c0cbda] focus:!placeholder-[#c0cbda] transition duration-300'
-							placeholder='Enter location'
-							autoComplete='off'
-						/>
-						<SearchButton />
-					</Search>
-				</WeatherInfo>
-			</Box>
+			{isLoading && <Loader />}
+
+			{!isLoading && !error && (
+				<Box backgroundUrl={backgroundUrl}>
+					<WeatherSummary weather={weather} />
+
+					<WeatherInfo>
+						<WeatherSearch>
+							<LocationInput
+								location={location}
+								onSetLocation={handleSetLocation}
+							/>
+							<SearchButton fetchWeatherData={fetchWeatherData} />
+						</WeatherSearch>
+
+						{weather.name && (
+							<>
+								<SavedLocations />
+								<WeatherDetails weather={weather} />
+							</>
+						)}
+					</WeatherInfo>
+				</Box>
+			)}
+
+			{error && <Error message={error} />}
 		</Container>
 	);
 };
