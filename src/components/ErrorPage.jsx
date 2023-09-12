@@ -9,10 +9,17 @@ function ErrorPage({ message }) {
 		<div
 			className="bg-[url('/error.webp')] bg-cover bg-center w-screen h-screen
                       text-[#CDD4DE] flex flex-col justify-center items-center bg-black
-                       bg-blend-multiply bg-opacity-40"
+                       bg-blend-multiply bg-opacity-40 text-center"
 		>
-			<h1 className='font-extrabold text-[15rem] opacity-60 -mb-3'>404</h1>
-			<h2 className='font-extrabold text-[2rem] opacity-70'>{message}</h2>
+			<h1 className='font-extrabold text-[15rem] opacity-60 -mb-3 max-[540px]:text-[10rem]'>
+				404
+			</h1>
+			<h2
+				className='font-extrabold text-[2rem] opacity-70 max-[540px]:text-[1.5rem] 
+				max-[420px]:text-[1.3rem]'
+			>
+				{message}
+			</h2>
 			<span className='font-medium text-xl'>
 				I tried to catch fog, but I mist
 			</span>

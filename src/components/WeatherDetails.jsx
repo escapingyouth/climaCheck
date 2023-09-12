@@ -8,7 +8,7 @@ function WeatherDetails({
 	weather: { cloudiness, humidity, speed, pressure }
 }) {
 	return (
-		<div className='px-14'>
+		<div className='px-14 h-full  max-[420px]:px-6 '>
 			<h2 className='text-secondary font-normal mb-4'>Weather Details</h2>
 			<ul
 				className='[&>li]:flex [&>li]:justify-between [&>li]:items-center 

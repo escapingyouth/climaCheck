@@ -54,7 +54,6 @@ function useWeather(apiKey) {
 			}
 
 			const data = await response.json();
-			console.log(data);
 
 			if (data.cod === '404') {
 				throw new Error('Location not found');
