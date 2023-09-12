@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import useWeather from './customHooks/useWeather';
 
 import Container from './components/Container';
@@ -12,6 +13,7 @@ import WeatherDetails from './components/WeatherDetails';
 
 import Loader from './components/Loader';
 import ErrorPage from './components/ErrorPage';
+import Preloader from './components/Preloader';
 
 const apiKey = import.meta.env.VITE_API_KEY;
 
@@ -27,7 +29,19 @@ const App = () => {
 		fetchWeatherData
 	} = useWeather(apiKey);
 
-	return (
+	const [pageLoading, setPageLoading] = useState(true);
+
+	useEffect(() => {
+		const timeoutId = setTimeout(() => {
+			setPageLoading(false);
+		}, 3000);
+
+		return () => clearTimeout(timeoutId);
+	}, []);
+
+	return pageLoading ? (
+		<Preloader />
+	) : (
 		<Container>
 			{isLoading && <Loader />}
 
