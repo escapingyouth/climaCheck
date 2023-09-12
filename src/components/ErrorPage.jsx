@@ -7,7 +7,7 @@ ErrorPage.propTypes = {
 function ErrorPage({ message }) {
 	return (
 		<div
-			className="bg-[url('/error.jpg')] bg-cover bg-center w-screen h-screen
+			className="bg-[url('/error.webp')] bg-cover bg-center w-screen h-screen
                       text-[#CDD4DE] flex flex-col justify-center items-center bg-black
                        bg-blend-multiply bg-opacity-40"
 		>

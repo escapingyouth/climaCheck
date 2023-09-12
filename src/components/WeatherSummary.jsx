@@ -1,10 +1,15 @@
 import PropTypes from 'prop-types';
+import { formatDateTime } from '../../utils/dateTime';
 
 WeatherSummary.propTypes = {
 	weather: PropTypes.object
 };
 
-function WeatherSummary({ weather: { name, temp, description, icon } }) {
+function WeatherSummary({
+	weather: { name, temp, description, icon, dt, timezone }
+}) {
+	const { formattedDate, formattedTime } = formatDateTime(dt, timezone);
+
 	return (
 		<div className='h-full w-3/5 px-11 pt-14 pb-20'>
 			<span className='font-medium'>ClimaCheck</span>
@@ -16,7 +21,9 @@ function WeatherSummary({ weather: { name, temp, description, icon } }) {
 					<div className='flex items-end gap-32'>
 						<div>
 							<h2 className='text-[3rem]'>{name}</h2>
-							<span>06:52 - Sunday, 31 Aug&apos;23</span>
+							<span>
+								{formattedTime} - {formattedDate}
+							</span>
 						</div>
 						<div className='text-center'>
 							<img

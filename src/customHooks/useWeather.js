@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 function useWeather(apiKey) {
 	const [state, setState] = useState({
 		location: '',
-		backgroundUrl: '/background.jpg',
+		backgroundUrl: '/background.webp',
 		weather: {},
 		isLoading: false,
 		error: null,
@@ -42,7 +42,7 @@ function useWeather(apiKey) {
 			return;
 		}
 
-		setState({ ...state, isLoading: true, error: null });
+		setState((prevState) => ({ ...prevState, isLoading: true, error: null }));
 
 		try {
 			const response = await fetch(
@@ -54,6 +54,7 @@ function useWeather(apiKey) {
 			}
 
 			const data = await response.json();
+			console.log(data);
 
 			if (data.cod === '404') {
 				throw new Error('Location not found');
@@ -64,7 +65,9 @@ function useWeather(apiKey) {
 				weather: [{ description, icon }],
 				main: { temp, humidity, pressure },
 				wind: { speed },
-				clouds: { all: cloudiness }
+				clouds: { all: cloudiness },
+				dt,
+				timezone
 			} = data;
 
 			setState((prevState) => ({
@@ -79,7 +82,9 @@ function useWeather(apiKey) {
 					speed,
 					icon,
 					pressure,
-					cloudiness
+					cloudiness,
+					dt,
+					timezone
 				},
 				isLoading: false,
 				error: null
