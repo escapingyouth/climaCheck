@@ -9,7 +9,7 @@ SearchButton.propTypes = {
 function SearchButton({ fetchWeatherData }) {
 	return (
 		<button
-			className='bg-secondary hover:opacity-90 py-6 px-7 transition duration-200
+			className='bg-[#e9ecef] hover:opacity-90 py-6 px-7 transition duration-200
 			             max-[380px]:py-4  max-[380px]:px-6'
 			onClick={fetchWeatherData}
 		>

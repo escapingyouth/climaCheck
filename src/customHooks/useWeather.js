@@ -39,6 +39,7 @@ function useWeather(apiKey) {
 	const fetchWeatherData = async () => {
 		if (location.length < 3) {
 			setState((prevState) => ({ ...prevState, weather: {}, error: null }));
+			alert('Location length must be greater than 2 characters');
 			return;
 		}
 

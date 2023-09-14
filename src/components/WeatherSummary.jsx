@@ -17,7 +17,7 @@ function WeatherSummary({
 		>
 			<span className='font-medium  max-[820px]:hidden'>ClimaCheck</span>
 			{name && (
-				<div className='flex flex-col justify-end h-full'>
+				<div className='flex flex-col justify-end h-full text-[#e9ecef]'>
 					<h1
 						className='text-[10rem] max-[1024px]:text-[8rem] max-[912px]:text-[10rem] -ml-1
 								  font-medium -mb-8  max-[380px]:text-[8rem]'
@@ -28,7 +28,7 @@ function WeatherSummary({
 						<div>
 							<h2
 								className='text-[3rem] max-[1024px]:text-[2rem] max-[912px]:text-[3rem]
-											max-[420px]:mb-2 max-[380px]:text-[2rem]'
+											max-[420px]:mb-2 max-[380px]:text-[2rem] leading-[1.1]'
 							>
 								{name}
 							</h2>

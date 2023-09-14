@@ -18,6 +18,8 @@ import Preloader from './components/Preloader';
 const apiKey = import.meta.env.VITE_API_KEY;
 
 const App = () => {
+	const [pageLoading, setPageLoading] = useState(true);
+
 	const {
 		location,
 		backgroundUrl,
@@ -29,8 +31,7 @@ const App = () => {
 		fetchWeatherData
 	} = useWeather(apiKey);
 
-	const [pageLoading, setPageLoading] = useState(true);
-
+	// Page loading animation
 	useEffect(() => {
 		const timeoutId = setTimeout(() => {
 			setPageLoading(false);
@@ -38,6 +39,17 @@ const App = () => {
 
 		return () => clearTimeout(timeoutId);
 	}, []);
+
+	useEffect(() => {
+		function callback(e) {
+			if (e.code === 'Enter') {
+				fetchWeatherData();
+			}
+		}
+		document.addEventListener('keydown', callback);
+
+		return () => document.removeEventListener('keydown', callback);
+	}, [fetchWeatherData]);
 
 	return pageLoading ? (
 		<Preloader />
