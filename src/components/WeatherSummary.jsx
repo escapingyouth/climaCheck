@@ -24,7 +24,7 @@ function WeatherSummary({
 					>
 						{Math.round(temp)}&deg;
 					</h1>
-					<div className='flex items-end gap-32'>
+					<div className='flex items-end gap-32 max-[420px]:gap-10 '>
 						<div>
 							<h2
 								className='text-[3rem] max-[1024px]:text-[2rem] max-[912px]:text-[3rem]
@@ -42,7 +42,7 @@ function WeatherSummary({
 								alt='weather icon'
 								className='w-16 h-16 max-[300px]:w-10 max-[300px]:h-10'
 							/>
-							<span className='capitalize max-[420px]:text-[0.9rem]'>
+							<span className='capitalize max-[420px]:text-[0.9rem] inline-block min-w-max'>
 								{description}
 							</span>
 						</div>
