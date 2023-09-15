@@ -1,8 +1,9 @@
-# React + Vite
+# ClimaCheck
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A weather app that displays different weather variations in cities all around the world using the OpenWeather API
 
-Currently, two official plugins are available:
+![Capture](https://github.com/escapingyouth/weatherApp/assets/79151294/517bf51b-325f-4963-bb22-240d063f8302)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+# For more information about API visit:
+
+https://openweathermap.org/
