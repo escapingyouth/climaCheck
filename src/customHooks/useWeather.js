@@ -1,65 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useReducer } from 'react';
 
-function useWeather(apiKey) {
-	const [state, setState] = useState({
-		location: '',
-		backgroundUrl: '/background.webp',
-		weather: {},
-		isLoading: false,
-		error: null,
-		recentLocations: JSON.parse(localStorage.getItem('recentLocations')) || []
-	});
+const initialState = {
+	location: '',
+	backgroundUrl: '/background.webp',
+	weather: {},
+	isLoading: false,
+	error: null,
+	recentLocations: JSON.parse(localStorage.getItem('recentLocations')) || []
+};
 
-	const {
-		location,
-		backgroundUrl,
-		weather,
-		isLoading,
-		error,
-		recentLocations
-	} = state;
+function reducer(state, action) {
+	switch (action.type) {
+		case 'fetchWeatherStart':
+			return { ...state, isLoading: true };
 
-	useEffect(() => {
-		localStorage.setItem('recentLocations', JSON.stringify(recentLocations));
-	}, [recentLocations]);
-
-	const handleSetLocation = (e) => {
-		setState((prevState) => ({ ...prevState, location: e.target.value }));
-	};
-
-	const handleAddToRecentLocations = (newLocation) => {
-		if (recentLocations[recentLocations.length - 1] !== newLocation) {
-			setState((prevState) => ({
-				...prevState,
-				recentLocations: [...recentLocations, newLocation]
-			}));
-		}
-	};
-
-	const fetchWeatherData = async () => {
-		if (location.length < 3) {
-			setState((prevState) => ({ ...prevState, weather: {}, error: null }));
-			alert('Location length must be greater than 2 characters');
-			return;
-		}
-
-		setState((prevState) => ({ ...prevState, isLoading: true, error: null }));
-
-		try {
-			const response = await fetch(
-				`https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric`
-			);
-
-			if (!response.ok) {
-				throw new Error('Failed to fetch weather information');
-			}
-
-			const data = await response.json();
-
-			if (data.cod === '404') {
-				throw new Error('Location not found');
-			}
-
+		case 'fetchWeatherSuccess': {
 			const {
 				name,
 				weather: [{ description, icon }],
@@ -68,11 +23,10 @@ function useWeather(apiKey) {
 				clouds: { all: cloudiness },
 				dt,
 				timezone
-			} = data;
+			} = action.payload;
 
-			setState((prevState) => ({
-				...prevState,
-				location: name,
+			return {
+				...state,
 				backgroundUrl: `https://source.unsplash.com/1600x900/?${name}`,
 				weather: {
 					name,
@@ -86,28 +40,90 @@ function useWeather(apiKey) {
 					dt,
 					timezone
 				},
-				isLoading: false,
-				error: null
-			}));
-
-			handleAddToRecentLocations(name);
-		} catch (error) {
-			setState((prevState) => ({
-				...prevState,
-				error: error.message,
 				isLoading: false
-			}));
+			};
+		}
+		case 'fetchWeatherFail':
+			return { ...state, isLoading: false, error: action.payload };
+
+		case 'setLocation':
+			return { ...state, location: action.payload };
+
+		case 'addToRecentLocations':
+			if (
+				state.recentLocations[state.recentLocations.length - 1] !==
+				action.payload
+			) {
+				return {
+					...state,
+					recentLocations: [...state.recentLocations, action.payload]
+				};
+			}
+			return state;
+
+		default:
+			throw new Error(`Unhandled action type of type ${action.type}`);
+	}
+}
+
+import { useEffect } from 'react';
+
+function useWeather(apiKey) {
+	const [state, dispatch] = useReducer(reducer, initialState);
+
+	useEffect(() => {
+		localStorage.setItem(
+			'recentLocations',
+			JSON.stringify(state.recentLocations)
+		);
+	}, [state.recentLocations]);
+
+	const handleSetLocation = (e) => {
+		dispatch({ type: 'setLocation', payload: e.target.value });
+	};
+
+	const handleAddToRecentLocations = (newLocation) => {
+		dispatch({ type: 'addToRecentLocations', payload: newLocation });
+	};
+
+	const fetchWeatherData = async () => {
+		if (state.location.length < 3) {
+			dispatch({ type: 'fetchWeatherSuccess', payload: {} });
+			alert('Location length must be greater than 2 characters');
+			return;
+		}
+
+		dispatch({ type: 'fetchWeatherStart' });
+
+		try {
+			const response = await fetch(
+				`https://api.openweathermap.org/data/2.5/weather?q=${state.location}&appid=${apiKey}&units=metric`
+			);
+
+			if (!response.ok) {
+				throw new Error('Failed to fetch weather information');
+			}
+
+			const data = await response.json();
+
+			if (data.cod === '404') {
+				throw new Error('Location not found');
+			}
+
+			dispatch({
+				type: 'fetchWeatherSuccess',
+				payload: data
+			});
+
+			handleAddToRecentLocations(data.name);
+		} catch (error) {
+			dispatch({ type: 'fetchWeatherFail', payload: error.message });
 			console.log(error);
 		}
 	};
 
 	return {
-		location,
-		backgroundUrl,
-		weather,
-		isLoading,
-		error,
-		recentLocations,
+		...state,
 		handleSetLocation,
 		fetchWeatherData
 	};
