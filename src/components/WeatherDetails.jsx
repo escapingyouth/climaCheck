@@ -1,12 +1,10 @@
-import PropTypes from 'prop-types';
+import { useWeatherContext } from '../contexts/WeatherContext';
 
-WeatherDetails.propTypes = {
-	weather: PropTypes.object
-};
+function WeatherDetails() {
+	const {
+		weather: { cloudiness, humidity, speed, pressure }
+	} = useWeatherContext();
 
-function WeatherDetails({
-	weather: { cloudiness, humidity, speed, pressure }
-}) {
 	return (
 		<div className='px-14 h-full  max-[420px]:px-6 '>
 			<h2 className='text-secondary font-normal mb-4'>Weather Details</h2>

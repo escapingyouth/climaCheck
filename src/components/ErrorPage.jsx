@@ -1,10 +1,8 @@
-import PropTypes from 'prop-types';
+import { useWeatherContext } from '../contexts/WeatherContext';
 
-ErrorPage.propTypes = {
-	message: PropTypes.string
-};
+function ErrorPage() {
+	const { error } = useWeatherContext();
 
-function ErrorPage({ message }) {
 	return (
 		<div
 			className="bg-[url('/error.webp')] bg-cover bg-center w-screen h-screen
@@ -18,7 +16,7 @@ function ErrorPage({ message }) {
 				className='font-extrabold text-[2rem] opacity-70 max-[540px]:text-[1.5rem] 
 				max-[420px]:text-[1.3rem]'
 			>
-				{message}
+				{error}
 			</h2>
 			<span className='font-medium text-xl'>
 				I tried to catch fog, but I mist

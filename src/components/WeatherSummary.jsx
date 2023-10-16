@@ -1,13 +1,11 @@
-import PropTypes from 'prop-types';
+import { useWeatherContext } from '../contexts/WeatherContext';
 import { formatDateTime } from '../../utils/dateTime';
 
-WeatherSummary.propTypes = {
-	weather: PropTypes.object
-};
+function WeatherSummary() {
+	const {
+		weather: { name, temp, description, icon, dt, timezone }
+	} = useWeatherContext();
 
-function WeatherSummary({
-	weather: { name, temp, description, icon, dt, timezone }
-}) {
 	const { formattedDate, formattedTime } = formatDateTime(dt, timezone);
 
 	return (

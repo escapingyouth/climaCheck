@@ -1,11 +1,13 @@
+import { useWeatherContext } from '../contexts/WeatherContext';
 import PropTypes from 'prop-types';
 
 Box.propTypes = {
-	backgroundUrl: PropTypes.string,
 	children: PropTypes.node.isRequired
 };
 
-function Box({ backgroundUrl, children }) {
+function Box({ children }) {
+	const { backgroundUrl } = useWeatherContext();
+
 	return (
 		<div
 			className='w-[85%] overflow-hidden h-[90%] max-[1024px]:w-[95%] max-[1024px]:h-[95%] drop-shadow-xl flex

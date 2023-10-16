@@ -1,11 +1,7 @@
-import PropTypes from 'prop-types';
+import { useWeatherContext } from '../contexts/WeatherContext';
 
-LocationInput.propTypes = {
-	location: PropTypes.string,
-	onSetLocation: PropTypes.func
-};
-
-function LocationInput({ location, onSetLocation }) {
+function LocationInput() {
+	const { location, handleSetLocation } = useWeatherContext();
 	return (
 		<input
 			type='text'
@@ -18,7 +14,7 @@ function LocationInput({ location, onSetLocation }) {
 			placeholder='Enter location'
 			autoComplete='off'
 			value={location}
-			onChange={onSetLocation}
+			onChange={handleSetLocation}
 		/>
 	);
 }

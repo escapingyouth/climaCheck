@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import useWeather from './customHooks/useWeather';
+import { useWeatherContext } from './contexts/WeatherContext';
 
 import Container from './components/Container';
 import Box from './components/Box';
@@ -15,21 +15,9 @@ import Loader from './components/Loader';
 import ErrorPage from './components/ErrorPage';
 import Preloader from './components/Preloader';
 
-const apiKey = import.meta.env.VITE_API_KEY;
-
 const App = () => {
 	const [pageLoading, setPageLoading] = useState(true);
-
-	const {
-		location,
-		backgroundUrl,
-		weather,
-		isLoading,
-		error,
-		recentLocations,
-		handleSetLocation,
-		fetchWeatherData
-	} = useWeather(apiKey);
+	const { weather, isLoading, error } = useWeatherContext();
 
 	// Page loading animation
 	useEffect(() => {
@@ -40,47 +28,33 @@ const App = () => {
 		return () => clearTimeout(timeoutId);
 	}, []);
 
-	useEffect(() => {
-		function callback(e) {
-			if (e.code === 'Enter') {
-				fetchWeatherData();
-			}
-		}
-		document.addEventListener('keydown', callback);
+	if (pageLoading) return <Preloader />;
 
-		return () => document.removeEventListener('keydown', callback);
-	}, [fetchWeatherData]);
-
-	return pageLoading ? (
-		<Preloader />
-	) : (
+	return (
 		<Container>
 			{isLoading && <Loader />}
 
 			{!isLoading && !error && (
-				<Box backgroundUrl={backgroundUrl}>
-					<WeatherSummary weather={weather} />
+				<Box>
+					<WeatherSummary />
 
 					<WeatherInfo>
 						<WeatherSearch>
-							<LocationInput
-								location={location}
-								onSetLocation={handleSetLocation}
-							/>
-							<SearchButton fetchWeatherData={fetchWeatherData} />
+							<LocationInput />
+							<SearchButton />
 						</WeatherSearch>
 
 						{weather.name && (
 							<>
-								<RecentLocations recentLocations={recentLocations} />
-								<WeatherDetails weather={weather} />
+								<RecentLocations />
+								<WeatherDetails />
 							</>
 						)}
 					</WeatherInfo>
 				</Box>
 			)}
 
-			{error && <ErrorPage message={error} />}
+			{error && <ErrorPage />}
 		</Container>
 	);
 };
